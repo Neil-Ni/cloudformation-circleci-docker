@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion" : "2010-09-09",
-  "Description" : "AWS CloudFormation Template to launch two instances with CodeDeploy via Auto Scaling with Launch Configurations. Questions, please contact fontesj@",
+  "Description" : "AWS CloudFormation Template to launch two instances with CodeDeployDocker via Auto Scaling with Launch Configurations. Questions, please contact fontesj@",
   "Parameters" : {
     "KeyName" : {
       "Description" : "Name of an existing EC2 KeyPair to enable SSH access to the instances",
@@ -13,14 +13,14 @@
     "TagKey" : {
       "Description" : "The EC2 tag key that identifies this as a target for deployments.",
       "Type" : "String",
-      "Default" : "CodeDeploy",
+      "Default" : "CodeDeployDocker",
       "AllowedPattern" : "[\\x20-\\x7E]*",
       "ConstraintDescription" : "Can contain only ASCII characters."
     },
     "TagValue" : {
       "Description" : "The EC2 tag value that identifies this as a target for deployments.",
       "Type" : "String",
-      "Default" : "CodeDeployDemo",
+      "Default" : "CodeDeployDockerDemo",
       "AllowedPattern" : "[\\x20-\\x7E]*",
       "ConstraintDescription" : "Can contain only ASCII characters."
     }
@@ -42,7 +42,7 @@
     "LaunchConfig" : {
       "Type" : "AWS::AutoScaling::LaunchConfiguration",
       "Metadata" : {
-        "Comment" : "Create CodeDeploy Instances",
+        "Comment" : "Create CodeDeployDocker Instances",
         "AWS::CloudFormation::Init" : {
           "config" : {
             "packages" : {
@@ -151,10 +151,10 @@
               [
                 "#!/bin/bash -xe\n",
                 "yum update -y aws-cfn-bootstrap; yum install -y aws-cli\n",
-                "# Install the AWS CodeDeploy Agent.\n",
+                "# Install the AWS CodeDeployDocker Agent.\n",
                 "cd /home/ec2-user/\n",
-                "aws s3 cp 's3://aws-codedeploy-us-east-1/latest/codedeploy-agent.noarch.rpm' . || error_exit 'Failed to download AWS CodeDeploy Agent.'\n",
-                "yum -y install codedeploy-agent.noarch.rpm || error_exit 'Failed to install AWS CodeDeploy Agent.' \n",
+                "aws s3 cp 's3://aws-codedeploy-us-east-1/latest/codedeploy-agent.noarch.rpm' . || error_exit 'Failed to download AWS CodeDeployDocker Agent.'\n",
+                "yum -y install codedeploy-agent.noarch.rpm || error_exit 'Failed to install AWS CodeDeployDocker Agent.' \n",
                 "/opt/aws/bin/cfn-init -v ",
                 "         --stack ",
                 {
@@ -171,14 +171,14 @@
                 {
                   "Ref" : "AWS::StackName"
                 },
-                "         --resource CodeDeployGroup ",
+                "         --resource CodeDeployDockerGroup ",
                 "         --region ",
                 {
                   "Ref" : "AWS::Region"
                 },
                 "\n",
                 "# All is well, so signal success.\n",
-                "/opt/aws/bin/cfn-signal -e 0 -r \"AWS CodeDeploy Agent setup complete.\" '",
+                "/opt/aws/bin/cfn-signal -e 0 -r \"AWS CodeDeployDocker Agent setup complete.\" '",
                 {
                   "Ref" : "WaitHandle"
                 },
@@ -247,9 +247,9 @@
         "Timeout" : "900",
         "Count" : "2"
       },
-      "DependsOn" : "CodeDeployGroup"
+      "DependsOn" : "CodeDeployDockerGroup"
     },
-    "CodeDeployTrustRole" : {
+    "CodeDeployDockerTrustRole" : {
       "Type" : "AWS::IAM::Role",
       "Properties" : {
         "AssumeRolePolicyDocument" : {
@@ -270,10 +270,10 @@
         "Path" : "/"
       }
     },
-    "CodeDeployRolePolicies" : {
+    "CodeDeployDockerRolePolicies" : {
       "Type" : "AWS::IAM::Policy",
       "Properties" : {
-        "PolicyName" : "CodeDeployPolicy",
+        "PolicyName" : "CodeDeployDockerPolicy",
         "PolicyDocument" : {
           "Statement" : [
             {
@@ -303,7 +303,7 @@
         },
         "Roles" : [
           {
-            "Ref" : "CodeDeployTrustRole"
+            "Ref" : "CodeDeployDockerTrustRole"
           }
         ]
       }
@@ -388,7 +388,7 @@
             }
           },
           {
-            "PolicyName" : "CodeDeployPolicy",
+            "PolicyName" : "CodeDeployDockerPolicy",
             "PolicyDocument" : {
               "Version" : "2012-10-17",
               "Statement" : [
@@ -427,7 +427,7 @@
         }
       }
     },
-    "CodeDeployGroup" : {
+    "CodeDeployDockerGroup" : {
       "Type" : "AWS::AutoScaling::AutoScalingGroup",
       "Properties" : {
         "AvailabilityZones" : {
@@ -455,7 +455,7 @@
           },
           {
             "Key" : "Name",
-            "Value" : "CodeDeployCFAutoScaling",
+            "Value" : "CodeDeployDockerCFAutoScaling",
             "PropagateAtLaunch" : true
           }
         ]
@@ -477,10 +477,10 @@
     }
   },
   "Outputs" : {
-    "CodeDeployTrustRoleARN" : {
+    "CodeDeployDockerTrustRoleARN" : {
       "Value" : {
         "Fn::GetAtt" : [
-          "CodeDeployTrustRole",
+          "CodeDeployDockerTrustRole",
           "Arn"
         ]
       }
@@ -489,7 +489,7 @@
       "Value" : {
         "Ref" : "CircleCIAccessKey"
       },
-      "Description" : "Access Key used for CircleCI CodeDeploy integration."
+      "Description" : "Access Key used for CircleCI CodeDeployDocker integration."
     },
     "SecretKeyforCircleCIUserIAM" : {
       "Value" : {
@@ -498,7 +498,7 @@
           "SecretAccessKey"
         ]
       },
-     "Description" : "Secret Key for use with CircleCLI CodeDeploy integration."
+     "Description" : "Secret Key for use with CircleCLI CodeDeployDocker integration."
     },
     "URL" : {
       "Description" : "URL of ELB",

@@ -119,6 +119,10 @@
                 "codedeploy-agent" : {
                   "enabled" : "true",
                   "ensureRunning" : "true"
+                },
+                "docker": {
+                  "enabled": "true",
+                  "ensureRunning": "true"
                 }
               }
             }
@@ -151,6 +155,8 @@
               [
                 "#!/bin/bash -xe\n",
                 "yum update -y aws-cfn-bootstrap; yum install -y aws-cli\n",
+                "yum install -y docker\n",
+                "usermod -a -G docker ec2-user\n",
                 "# Install the AWS CodeDeployDocker Agent.\n",
                 "cd /home/ec2-user/\n",
                 "aws s3 cp 's3://aws-codedeploy-us-east-1/latest/codedeploy-agent.noarch.rpm' . || error_exit 'Failed to download AWS CodeDeployDocker Agent.'\n",
